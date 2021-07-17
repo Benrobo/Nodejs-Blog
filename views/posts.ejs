@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home Page</title>
+    <%- include("inc/styles.ejs") %> 
+</head>
+<body>
+    <!-- header -->
+    <% if (data){ %> 
+        <% data.forEach((el)=>{ %>
+    <header class="header" style="background:url('<%= el.media %>');background-size:cover; overflow: hidden; background-position:center; height:50vh; color:#fff;">
+        <!-- navbar -->
+        <nav class="navbar navbar-expand-lg navbar-light bg-light">
+            <div class="container-fluid">
+              <a class="navbar-brand" href="#">Navbar</a>
+              <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+              </button>
+              <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                  <li class="nav-item">
+                    <a class="nav-link active" aria-current="page" href="#">Home</a>
+                  </li>
+                  <li class="nav-item">
+                    <a class="nav-link" href="#">Add Post</a>
+                  </li>
+                </ul>
+              </div>
+            </div>
+        </nav>
+        <div class="ovl" style="background:rgba(0,0,0,.8); height:50vh; display:flex; align-items: center; justify-content: center;">
+            <div class="container">
+                <h1 class="display-4"><%= el.title %></h1>
+                <p><%= el.created_at %></p>
+            </div>
+        </div>
+    </header>
+    <% }) %> 
+    <% } %>
+    <!-- blog-content -->
+    <section class="section">
+        <div class="container">
+            <div class="body mt-5">
+                <% if (data){ %> 
+                    <% data.forEach((el)=>{ %>
+                        <small>Author: <b><%= el.author.toUpperCase() %></b></small>
+                        <br>
+                        <br>
+                        <p><%= el.body %></p>
+                    
+                        <br>
+                        <a href="/">
+                            <button class="btn btn-default">
+                                Back
+                            </button>
+                        </a>
+                        <a href="/addpost/<%= el.uuid %>" class="btn btn-success">
+                            <small>Edit Post</small>
+                        </a>
+                        <a href="/deletePost/<%= el.uuid %>" class="btn btn-danger">
+                            <small>Delete Post</small>
+                        </a>
+                    <% })%>
+                <% } %>
+            </div>
+        </div>
+        <br>
+        <br>
+    </section>
+
+    <%- include("inc/footer.ejs") %>
+</body>
+</html>

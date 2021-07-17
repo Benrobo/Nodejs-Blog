@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Add Post Page</title>
+    <%- include("inc/styles.ejs") %>
+  </head>
+  <body>
+    <!-- blog-content -->
+    <section class="section">
+      <h6><a href="/">Home</a></h6>
+      <div class="container">
+        <% if(type == "post") {%>
+        <form class="post-form form-group">
+          <div class="alert-cont"></div>
+          <div class="ml-4">
+            <h1>ADD Post</h1>
+            <br />
+            <label>Post Title</label>
+            <input type="text" class="form-control" name="posttitle" />
+          </div>
+          <div class="ml-4">
+            <label>Author</label>
+            <input type="text" class="form-control" name="author" />
+          </div>
+          <div class="ml-4">
+            <label>Post Media (imgage only)</label>
+            <input type="text" class="form-control" name="postmedia" />
+          </div>
+          <div class="ml-4">
+            <label>Post Content</label>
+            <textarea
+              name="content"
+              cols="30"
+              rows="5"
+              class="form-control"
+            ></textarea>
+          </div>
+          <div class="control m-4">
+            <button
+              type="submit"
+              id="post-btn"
+              class="btn btn-primary post-btn"
+            >
+              Submit
+            </button>
+          </div>
+        </form>
+        <% } %> 
+        <% if(data && type == "edit") {%> 
+            <% data.forEach((el)=>{%>
+            <form class="edit-form form-group">
+            <div class="alert-cont"></div>
+            <div class="ml-4">
+                <h1>Edit Post</h1>
+                <br />
+                <label>Post Title</label>
+                <input
+                type="text"
+                value="<%= el.title %> "
+                class="form-control"
+                name="posttitle"
+                />
+            </div>
+            <div class="ml-4">
+                <label>Author</label>
+                <input
+                type="text"
+                value="<%= el.author %> "
+                class="form-control"
+                name="author"
+                />
+            </div>
+            <div class="ml-4">
+                <label>Post Media (imgage url)</label>
+                <input
+                type="text"
+                value="<%= el.media %> "
+                class="form-control"
+                name="postmedia"
+                />
+            </div>
+            <div class="ml-4">
+                <input
+                type="hidden"
+                name="postid"
+                value="<%= el.uuid  %>"
+                class="post-id"
+                />
+                <label>Post Content</label>
+                <textarea name="content" cols="30" rows="5" class="form-control">
+                                <%= el.body %> "
+                            </textarea
+                >
+            </div>
+            <div class="control m-4">
+                <button type="button" class="btn btn-success save-btn">
+                Save Changes
+                </button>
+            </div>
+            </form>
+            <% }) %>
+        <% } %>
+      </div>
+      <br />
+      <br />
+      <br />
+      <br />
+    </section>
+
+    <script>
+      window.addEventListener("load", function () {
+        let postform = document.querySelector(".post-form");
+        let editform = document.querySelector(".edit-form");
+        let postbtn = document.querySelector(".post-btn");
+        let savebtn = document.querySelector(".save-btn");
+
+        if (postbtn !== null) {
+          postbtn.onclick = async function (e) {
+            e.preventDefault();
+
+            let formData = new FormData(postform);
+
+            let formobj = Object.fromEntries(formData);
+
+            let res = await fetch("/addPost", {
+              method: "POST",
+              headers: {
+                "content-type": "application/json",
+              },
+              body: JSON.stringify(formobj),
+            });
+
+            let data = await res.json();
+
+            let div = document.createElement("div");
+            let alrtcont = document.querySelector(".alert-cont");
+
+            if (data && data.status == "success") {
+              alrtcont.innerHTML = "";
+              div.setAttribute("class", "alert alert-success");
+              div.innerHTML = data.err;
+              alrtcont.appendChild(div);
+            } else if (data && data.status == "fail") {
+              alrtcont.innerHTML = "";
+              div.setAttribute("class", "alert alert-danger");
+              div.innerHTML = data.err;
+              alrtcont.appendChild(div);
+            }
+            setTimeout(() => {
+            alrtcont.innerHTML = "";
+          }, 2000);
+          };
+        }
+
+        if(savebtn !== null){
+            savebtn.onclick = async (e) => {
+          e.preventDefault();
+          let formData = new FormData(editform);
+          let formobj = Object.fromEntries(formData);
+          let postid = formobj.postid;
+          let res = await fetch(`/editPost/${postid}`, {
+              method: "POST",
+              headers: {
+                  "content-type" : "application/json"
+              },
+              body: JSON.stringify(formobj)
+          })
+
+          let data = await res.json()
+          let div  =document.createElement("div");
+          let alrtcont = document.querySelector(".alert-cont")
+
+          if(data && data.status == "success"){
+              alrtcont.innerHTML = ""
+              div.setAttribute("class", "alert alert-success")
+              div.innerHTML = data.err
+              alrtcont.appendChild(div)
+          }
+          else if(data && data.status == "fail"){
+              alrtcont.innerHTML = ""
+              div.setAttribute("class", "alert alert-danger")
+              div.innerHTML = data.err
+              alrtcont.appendChild(div)
+          }
+
+          setTimeout(() => {
+            alrtcont.innerHTML = "";
+          }, 2000);
+        };
+        }
+      });
+    </script>
+  </body>
+</html>
